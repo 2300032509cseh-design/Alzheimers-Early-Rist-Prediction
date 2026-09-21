@@ -1,0 +1,25 @@
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Datasets & large data files (28MB+)
+*.dta
+*.csv
+*.parquet
+*.h5
+
+# Environments & IDEs
+.venv/
+venv/
+ENV/
+.vscode/
+.idea/
+*.swp
+
+# Logs & test results
+*.log
+.pytest_cache/
+results/
