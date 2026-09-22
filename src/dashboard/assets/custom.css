@@ -1,166 +1,169 @@
-/* Modern Dark Mode Styling for Dash & Plotly Components */
+/* ==========================================================================
+   STUNNING PASTEL DESIGN SYSTEM FOR CLINICIAN RISK DASHBOARD
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 body {
-    background-color: #0f172a !important;
-    color: #f8fafc !important;
-    font-family: 'Segoe UI', -apple-system, Roboto, sans-serif !important;
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    font-family: 'Plus Jakarta Sans', 'Segoe UI', -apple-system, Roboto, sans-serif !important;
+    margin: 0;
+    padding: 0;
 }
 
 /* ==========================================================================
-   Complete Dark Mode Styling for Dash Dropdowns (React-Select v1, v2, & v3+)
+   Pastel Cards & Containers
    ========================================================================== */
+.pastel-card {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px -2px rgba(148, 163, 184, 0.12), 0 2px 6px -1px rgba(148, 163, 184, 0.08) !important;
+    padding: 24px !important;
+    transition: all 0.2s ease-in-out !important;
+}
 
-/* Main Container & Input Box */
+.pastel-card:hover {
+    box-shadow: 0 10px 25px -3px rgba(148, 163, 184, 0.2) !important;
+}
+
+/* ==========================================================================
+   Dash Dropdown (React-Select) Pastel Styling
+   ========================================================================== */
 .dash-dropdown,
 .dash-dropdown *,
 div[class*="Select"],
 div[class*="select"],
 div[class*="Dropdown"] {
-    color: #f8fafc !important;
+    color: #0f172a !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
 }
 
+/* Main Select Bar */
 div[class*="control"],
 div[class*="Control"],
 .Select-control {
-    background-color: #1e293b !important;
-    border: 1px solid #334155 !important;
-    border-radius: 8px !important;
-    color: #f8fafc !important;
-    box-shadow: none !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    color: #0f172a !important;
+    min-height: 42px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
 }
 
 div[class*="control"]:hover {
-    border-color: #38bdf8 !important;
+    border-color: #818cf8 !important;
 }
 
-/* Selected Value Label Inside Control */
+/* Selected Value inside bar */
 div[class*="singleValue"],
 div[class*="SingleValue"],
 div[class*="value-container"],
 .Select-value,
 .Select-value-label {
-    color: #f8fafc !important;
+    color: #0f172a !important;
     font-weight: 600 !important;
+    font-size: 13px !important;
 }
 
-/* Input text when typing */
-div[class*="Input"],
-div[class*="input"] input {
-    color: #f8fafc !important;
-}
-
-/* Dropdown Menu Popup List */
+/* Dropdown Menu List */
 div[class*="menu"],
 div[class*="Menu"],
 .Select-menu-outer,
 .Select-menu {
-    background-color: #1e293b !important;
-    border: 1px solid #334155 !important;
-    border-radius: 8px !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 12px 28px -4px rgba(148, 163, 184, 0.3) !important;
     z-index: 9999 !important;
 }
 
-/* Individual Options in Dropdown List */
+/* Dropdown Items */
 div[class*="option"],
 div[class*="Option"],
 .Select-option {
-    background-color: #1e293b !important;
-    color: #f8fafc !important;
-    padding: 10px 14px !important;
-    cursor: pointer !important;
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
 }
 
-/* Focused / Hovered Option */
 div[class*="option"]:hover,
 div[class*="option"][class*="focused"],
-div[class*="option"][class*="is-focused"],
 .Select-option:hover,
 .Select-option.is-focused {
-    background-color: #334155 !important;
-    color: #38bdf8 !important;
+    background-color: #e0e7ff !important;
+    color: #4338ca !important;
+    font-weight: 600 !important;
 }
 
-/* Selected Option in List */
 div[class*="option"][class*="selected"],
-div[class*="option"][class*="is-selected"],
 .Select-option.is-selected {
-    background-color: #0f172a !important;
-    color: #10b981 !important;
-    font-weight: bold !important;
-}
-
-/* Dropdown Arrow & Clear Icons */
-div[class*="indicatorContainer"],
-div[class*="dropdownIndicator"],
-div[class*="clearIndicator"],
-.Select-arrow-zone,
-.Select-arrow {
-    color: #94a3b8 !important;
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+    font-weight: 700 !important;
 }
 
 /* ==========================================================================
-   RC-Slider Dark Mode Styling
+   RC-Slider Pastel Styling
    ========================================================================== */
-
 .rc-slider {
     padding: 12px 0 !important;
 }
 
 .rc-slider-rail {
-    background-color: #334155 !important;
-    height: 6px !important;
+    background-color: #e2e8f0 !important;
+    height: 8px !important;
+    border-radius: 4px !important;
 }
 
 .rc-slider-track {
-    background-color: #38bdf8 !important;
-    height: 6px !important;
+    background-color: #818cf8 !important;
+    height: 8px !important;
+    border-radius: 4px !important;
 }
 
 .rc-slider-handle {
-    border: 2px solid #38bdf8 !important;
-    background-color: #0f172a !important;
-    width: 16px !important;
-    height: 16px !important;
-    margin-top: -5px !important;
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4) !important;
+    border: 3px solid #6366f1 !important;
+    background-color: #ffffff !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin-top: -6px !important;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3) !important;
 }
 
-.rc-slider-handle:hover,
-.rc-slider-handle:active {
-    border-color: #10b981 !important;
-    box-shadow: 0 0 14px rgba(16, 185, 129, 0.6) !important;
+.rc-slider-handle:hover {
+    border-color: #4f46e5 !important;
+    transform: scale(1.15);
 }
 
 .rc-slider-mark-text {
-    color: #94a3b8 !important;
+    color: #64748b !important;
     font-size: 11px !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
 }
 
 .rc-slider-mark-text-active {
-    color: #38bdf8 !important;
+    color: #4f46e5 !important;
     font-weight: 700 !important;
 }
 
-.rc-slider-tooltip-inner {
-    background-color: #334155 !important;
-    color: #f8fafc !important;
-    border-radius: 4px !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-}
-
-/* Tabs Styling */
+/* ==========================================================================
+   Navigation Tabs Pastel Styling
+   ========================================================================== */
 .tab {
-    background-color: #1e293b !important;
-    color: #94a3b8 !important;
-    border: 1px solid #334155 !important;
-    border-radius: 8px 8px 0 0 !important;
+    background-color: #ffffff !important;
+    color: #64748b !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px 12px 0 0 !important;
+    font-weight: 600 !important;
+    padding: 14px 20px !important;
 }
 
 .tab--selected {
-    background-color: #334155 !important;
-    color: #38bdf8 !important;
-    font-weight: bold !important;
-    border-bottom: 2px solid #38bdf8 !important;
+    background-color: #e0e7ff !important;
+    color: #4338ca !important;
+    font-weight: 700 !important;
+    border-bottom: 3px solid #6366f1 !important;
 }

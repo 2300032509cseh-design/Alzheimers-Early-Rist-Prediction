@@ -34,7 +34,6 @@ explainer = ClinicianSHAPExplainer(mm_model.model, all_feats)
 auditor = SubgroupFairnessAuditor()
 neg_campaign = MandatoryNegativeTestCampaign(mm_model, loader)
 
-# Pre-compute negative test results on startup for instant UI response
 print("Pre-computing Negative Test Campaign logs...")
 cached_neg_results = neg_campaign.run_all_negative_tests(test_df)
 
@@ -46,49 +45,56 @@ app = dash.Dash(
     title="Clinician Risk Dashboard | NIA PREPARE"
 )
 
-# Dark Theme Tokens
-DARK_BG = "#0f172a"
-CARD_BG = "#1e293b"
-ACCENT_BLUE = "#38bdf8"
-ACCENT_GREEN = "#10b981"
-ACCENT_AMBER = "#f59e0b"
-ACCENT_RED = "#ef4444"
-TEXT_COLOR = "#f8fafc"
+# Soft Pastel Color Palette Tokens
+PASTEL_BG = "#f1f5f9"
+CARD_BG = "#ffffff"
+TEXT_DARK = "#0f172a"
+TEXT_MUTED = "#64748b"
+
+PASTEL_INDIGO = "#6366f1"
+PASTEL_PURPLE = "#a78bfa"
+PASTEL_MINT = "#10b981"
+PASTEL_PEACH = "#f59e0b"
+PASTEL_ROSE = "#ef4444"
+PASTEL_SKY = "#0284c7"
 
 app.layout = html.Div(
     style={
-        "backgroundColor": DARK_BG,
-        "color": TEXT_COLOR,
-        "fontFamily": "'Segoe UI', -apple-system, Roboto, sans-serif",
+        "backgroundColor": PASTEL_BG,
+        "color": TEXT_DARK,
+        "fontFamily": "'Plus Jakarta Sans', 'Segoe UI', -apple-system, Roboto, sans-serif",
         "minHeight": "100vh",
-        "padding": "24px"
+        "padding": "28px"
     },
     children=[
-        # Header Banner
+        # Header Banner Card
         html.Div(
             style={
+                "backgroundColor": CARD_BG,
+                "borderRadius": "16px",
+                "padding": "20px 28px",
+                "marginBottom": "24px",
+                "boxShadow": "0 4px 20px -2px rgba(148, 163, 184, 0.12)",
+                "border": "1px solid #e2e8f0",
                 "display": "flex",
                 "justifyContent": "space-between",
-                "alignItems": "center",
-                "borderBottom": "1px solid #334155",
-                "paddingBottom": "16px",
-                "marginBottom": "24px"
+                "alignItems": "center"
             },
             children=[
                 html.Div([
                     html.H1("HealthCare Data Analytics — Dementia Risk Decision Support System", 
-                            style={"margin": "0 0 4px 0", "fontSize": "22px", "fontWeight": "700", "color": ACCENT_BLUE}),
+                            style={"margin": "0 0 4px 0", "fontSize": "22px", "fontWeight": "800", "color": PASTEL_INDIGO}),
                     html.P("Explainable Early-Risk Prediction for Alzheimer's and Related Dementias (NIA PREPARE / MHAS Benchmark)", 
-                           style={"margin": 0, "color": "#94a3b8", "fontSize": "13px"})
+                           style={"margin": 0, "color": TEXT_MUTED, "fontSize": "13px", "fontWeight": "500"})
                 ]),
                 html.Div(
                     style={"display": "flex", "gap": "12px", "alignItems": "center"},
                     children=[
                         html.Span("● SYSTEM CALIBRATED & AUDITED", 
-                                  style={"backgroundColor": "rgba(16, 185, 129, 0.15)", "color": ACCENT_GREEN, 
-                                         "padding": "6px 12px", "borderRadius": "20px", "fontSize": "12px", "fontWeight": "600"}),
+                                  style={"backgroundColor": "#d1fae5", "color": "#065f46", 
+                                         "padding": "6px 14px", "borderRadius": "20px", "fontSize": "12px", "fontWeight": "700"}),
                         html.Span("ECE: 0.0035 | AUROC: 0.9692", 
-                                  style={"backgroundColor": "#334155", "padding": "6px 12px", "borderRadius": "6px", "fontSize": "12px", "color": "#e2e8f0"})
+                                  style={"backgroundColor": "#e0e7ff", "color": "#3730a3", "padding": "6px 14px", "borderRadius": "8px", "fontSize": "12px", "fontWeight": "700"})
                     ]
                 )
             ]
@@ -98,28 +104,27 @@ app.layout = html.Div(
         dcc.Tabs(
             id="main-tabs",
             value="patient-calculator",
-            colors={"border": "#334155", "primary": ACCENT_BLUE, "background": CARD_BG},
+            colors={"border": "#e2e8f0", "primary": PASTEL_INDIGO, "background": CARD_BG},
             children=[
                 dcc.Tab(label="🩺 Clinician Risk Calculator & SHAP", value="patient-calculator", 
-                        style={"padding": "12px", "color": "#94a3b8", "backgroundColor": "#1e293b"}, 
-                        selected_style={"padding": "12px", "backgroundColor": "#334155", "color": ACCENT_BLUE, "fontWeight": "bold"}),
+                        style={"padding": "12px", "color": TEXT_MUTED, "backgroundColor": CARD_BG, "fontWeight": "600"}, 
+                        selected_style={"padding": "12px", "backgroundColor": "#e0e7ff", "color": "#3730a3", "fontWeight": "bold"}),
                 dcc.Tab(label="📉 Calibration & Reliability Inspector", value="calibration-tab", 
-                        style={"padding": "12px", "color": "#94a3b8", "backgroundColor": "#1e293b"}, 
-                        selected_style={"padding": "12px", "backgroundColor": "#334155", "color": ACCENT_BLUE, "fontWeight": "bold"}),
+                        style={"padding": "12px", "color": TEXT_MUTED, "backgroundColor": CARD_BG, "fontWeight": "600"}, 
+                        selected_style={"padding": "12px", "backgroundColor": "#e0e7ff", "color": "#3730a3", "fontWeight": "bold"}),
                 dcc.Tab(label="⚖️ Subgroup Fairness Auditor", value="fairness-tab", 
-                        style={"padding": "12px", "color": "#94a3b8", "backgroundColor": "#1e293b"}, 
-                        selected_style={"padding": "12px", "backgroundColor": "#334155", "color": ACCENT_BLUE, "fontWeight": "bold"}),
+                        style={"padding": "12px", "color": TEXT_MUTED, "backgroundColor": CARD_BG, "fontWeight": "600"}, 
+                        selected_style={"padding": "12px", "backgroundColor": "#e0e7ff", "color": "#3730a3", "fontWeight": "bold"}),
                 dcc.Tab(label="🛡️ Negative Test Campaign & Degraded Mode", value="negative-tests-tab", 
-                        style={"padding": "12px", "color": "#94a3b8", "backgroundColor": "#1e293b"}, 
-                        selected_style={"padding": "12px", "backgroundColor": "#334155", "color": ACCENT_BLUE, "fontWeight": "bold"})
+                        style={"padding": "12px", "color": TEXT_MUTED, "backgroundColor": CARD_BG, "fontWeight": "600"}, 
+                        selected_style={"padding": "12px", "backgroundColor": "#e0e7ff", "color": "#3730a3", "fontWeight": "bold"})
             ]
         ),
 
-        html.Div(id="tab-content", style={"marginTop": "20px"})
+        html.Div(id="tab-content", style={"marginTop": "24px"})
     ]
 )
 
-# Callback for Tab Switching
 @callback(
     Output("tab-content", "children"),
     Input("main-tabs", "value")
@@ -136,7 +141,6 @@ def render_tab_content(tab_name):
     return html.Div("Select a tab.")
 
 def render_patient_calculator():
-    # Construct clean dropdown options
     dropdown_options = []
     for i in range(15):
         row = test_df.iloc[i]
@@ -150,71 +154,66 @@ def render_patient_calculator():
         children=[
             # Left Column: Patient Controls
             html.Div(
-                style={"backgroundColor": CARD_BG, "padding": "20px", "borderRadius": "12px", "border": "1px solid #334155"},
+                className="pastel-card",
                 children=[
-                    html.H3("Patient Clinical Parameters", style={"marginTop": 0, "fontSize": "16px", "color": ACCENT_BLUE}),
+                    html.H3("Patient Clinical Parameters", style={"marginTop": 0, "fontSize": "16px", "color": PASTEL_INDIGO, "fontWeight": "700"}),
                     
-                    html.Label("Patient Case Selector:", style={"fontSize": "13px", "fontWeight": "600", "color": "#f8fafc", "marginBottom": "6px", "display": "block"}),
-                    html.Div(
-                        style={"backgroundColor": "#1e293b", "borderRadius": "8px"},
-                        children=[
-                            dcc.Dropdown(
-                                id="sample-patient-dropdown",
-                                options=dropdown_options,
-                                value=0,
-                                clearable=False,
-                                className="dark-dropdown"
-                            )
-                        ]
+                    html.Label("Patient Case Selector:", style={"fontSize": "13px", "fontWeight": "700", "color": TEXT_DARK, "marginBottom": "8px", "display": "block"}),
+                    dcc.Dropdown(
+                        id="sample-patient-dropdown",
+                        options=dropdown_options,
+                        value=0,
+                        clearable=False,
+                        className="dash-dropdown"
                     ),
                     
-                    html.Hr(style={"borderColor": "#334155", "margin": "16px 0"}),
+                    html.Hr(style={"borderColor": "#e2e8f0", "margin": "20px 0"}),
                     
                     # Sliders with Dynamic Badge Display
                     html.Div(
-                        style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginTop": "8px"},
+                        style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginTop": "10px"},
                         children=[
-                            html.Label("Verbal Learning Score (0-8):", style={"fontSize": "12px", "color": "#cbd5e1"}),
-                            html.Span(id="val-recuerdo1", style={"backgroundColor": "#334155", "color": ACCENT_BLUE, "padding": "2px 8px", "borderRadius": "4px", "fontSize": "12px", "fontWeight": "bold"})
+                            html.Label("Verbal Learning Score (0-8):", style={"fontSize": "13px", "color": TEXT_DARK, "fontWeight": "600"}),
+                            html.Span(id="val-recuerdo1", style={"backgroundColor": "#e0e7ff", "color": "#3730a3", "padding": "3px 10px", "borderRadius": "6px", "fontSize": "12px", "fontWeight": "700"})
                         ]
                     ),
-                    dcc.Slider(id="slider-recuerdo1", min=0, max=8, step=0.5, value=4.0, marks={0:{'label':'0', 'style':{'color':'#94a3b8'}}, 4:{'label':'4', 'style':{'color':'#94a3b8'}}, 8:{'label':'8', 'style':{'color':'#94a3b8'}}}),
+                    dcc.Slider(id="slider-recuerdo1", min=0, max=8, step=0.5, value=4.0, marks={0:{'label':'0'}, 4:{'label':'4'}, 8:{'label':'8'}}),
                     
                     html.Div(
-                        style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginTop": "8px"},
+                        style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginTop": "12px"},
                         children=[
-                            html.Label("Delayed Verbal Recall (0-8):", style={"fontSize": "12px", "color": "#cbd5e1"}),
-                            html.Span(id="val-recuerdo2", style={"backgroundColor": "#334155", "color": ACCENT_BLUE, "padding": "2px 8px", "borderRadius": "4px", "fontSize": "12px", "fontWeight": "bold"})
+                            html.Label("Delayed Verbal Recall (0-8):", style={"fontSize": "13px", "color": TEXT_DARK, "fontWeight": "600"}),
+                            html.Span(id="val-recuerdo2", style={"backgroundColor": "#e0e7ff", "color": "#3730a3", "padding": "3px 10px", "borderRadius": "6px", "fontSize": "12px", "fontWeight": "700"})
                         ]
                     ),
-                    dcc.Slider(id="slider-recuerdo2", min=0, max=8, step=0.5, value=3.0, marks={0:{'label':'0', 'style':{'color':'#94a3b8'}}, 4:{'label':'4', 'style':{'color':'#94a3b8'}}, 8:{'label':'8', 'style':{'color':'#94a3b8'}}}),
+                    dcc.Slider(id="slider-recuerdo2", min=0, max=8, step=0.5, value=3.0, marks={0:{'label':'0'}, 4:{'label':'4'}, 8:{'label':'8'}}),
 
                     html.Div(
-                        style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginTop": "8px"},
+                        style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginTop": "12px"},
                         children=[
-                            html.Label("Visual Scanning Speed (0-60):", style={"fontSize": "12px", "color": "#cbd5e1"}),
-                            html.Span(id="val-visualscan", style={"backgroundColor": "#334155", "color": ACCENT_BLUE, "padding": "2px 8px", "borderRadius": "4px", "fontSize": "12px", "fontWeight": "bold"})
+                            html.Label("Visual Scanning Speed (0-60):", style={"fontSize": "13px", "color": TEXT_DARK, "fontWeight": "600"}),
+                            html.Span(id="val-visualscan", style={"backgroundColor": "#e0e7ff", "color": "#3730a3", "padding": "3px 10px", "borderRadius": "6px", "fontSize": "12px", "fontWeight": "700"})
                         ]
                     ),
-                    dcc.Slider(id="slider-visualscan", min=0, max=60, step=5, value=25, marks={0:{'label':'0', 'style':{'color':'#94a3b8'}}, 30:{'label':'30', 'style':{'color':'#94a3b8'}}, 60:{'label':'60', 'style':{'color':'#94a3b8'}}}),
+                    dcc.Slider(id="slider-visualscan", min=0, max=60, step=5, value=25, marks={0:{'label':'0'}, 30:{'label':'30'}, 60:{'label':'60'}}),
 
                     html.Div(
-                        style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginTop": "8px"},
+                        style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginTop": "12px"},
                         children=[
-                            html.Label("Patient Age (Years):", style={"fontSize": "12px", "color": "#cbd5e1"}),
-                            html.Span(id="val-edad", style={"backgroundColor": "#334155", "color": ACCENT_BLUE, "padding": "2px 8px", "borderRadius": "4px", "fontSize": "12px", "fontWeight": "bold"})
+                            html.Label("Patient Age (Years):", style={"fontSize": "13px", "color": TEXT_DARK, "fontWeight": "600"}),
+                            html.Span(id="val-edad", style={"backgroundColor": "#e0e7ff", "color": "#3730a3", "padding": "3px 10px", "borderRadius": "6px", "fontSize": "12px", "fontWeight": "700"})
                         ]
                     ),
-                    dcc.Slider(id="slider-edad", min=50, max=95, step=1, value=72, marks={50:{'label':'50', 'style':{'color':'#94a3b8'}}, 70:{'label':'70', 'style':{'color':'#94a3b8'}}, 90:{'label':'90', 'style':{'color':'#94a3b8'}}}),
+                    dcc.Slider(id="slider-edad", min=50, max=95, step=1, value=72, marks={50:{'label':'50'}, 70:{'label':'70'}, 90:{'label':'90'}}),
 
                     # Switches for Behavioral Activities
                     html.Div(
-                        style={"marginTop": "16px", "display": "grid", "gridTemplateColumns": "1fr 1fr", "gap": "10px"},
+                        style={"marginTop": "20px", "display": "grid", "gridTemplateColumns": "1fr 1fr", "gap": "12px"},
                         children=[
-                            dcc.Checklist(id="chk-puzzles", options=[{"label": " Crosswords / Puzzles", "value": 1}], value=[1], style={"fontSize": "12px", "color": "#f8fafc"}),
-                            dcc.Checklist(id="chk-tech", options=[{"label": " Uses Tech / Mobile", "value": 1}], value=[1], style={"fontSize": "12px", "color": "#f8fafc"}),
-                            dcc.Checklist(id="chk-exercise", options=[{"label": " Exercise 3x/wk", "value": 1}], value=[0], style={"fontSize": "12px", "color": "#f8fafc"}),
-                            dcc.Checklist(id="chk-stroke", options=[{"label": " History of Stroke", "value": 1}], value=[0], style={"fontSize": "12px", "color": "#f8fafc"})
+                            dcc.Checklist(id="chk-puzzles", options=[{"label": " Crosswords / Puzzles", "value": 1}], value=[1], style={"fontSize": "13px", "color": TEXT_DARK, "fontWeight": "500"}),
+                            dcc.Checklist(id="chk-tech", options=[{"label": " Uses Tech / Mobile", "value": 1}], value=[1], style={"fontSize": "13px", "color": TEXT_DARK, "fontWeight": "500"}),
+                            dcc.Checklist(id="chk-exercise", options=[{"label": " Exercise 3x/wk", "value": 1}], value=[0], style={"fontSize": "13px", "color": TEXT_DARK, "fontWeight": "500"}),
+                            dcc.Checklist(id="chk-stroke", options=[{"label": " History of Stroke", "value": 1}], value=[0], style={"fontSize": "13px", "color": TEXT_DARK, "fontWeight": "500"})
                         ]
                     )
                 ]
@@ -226,18 +225,15 @@ def render_patient_calculator():
                     # Calibrated Risk Score Header Card
                     html.Div(
                         id="risk-score-card",
-                        style={
-                            "backgroundColor": CARD_BG, "padding": "20px", "borderRadius": "12px", 
-                            "border": "1px solid #334155", "marginBottom": "20px", "display": "flex",
-                            "justifyContent": "space-between", "alignItems": "center"
-                        }
+                        className="pastel-card",
+                        style={"marginBottom": "24px", "display": "flex", "justifyContent": "space-between", "alignItems": "center"}
                     ),
 
                     # SHAP Per-Patient Explanation Chart
                     html.Div(
-                        style={"backgroundColor": CARD_BG, "padding": "20px", "borderRadius": "12px", "border": "1px solid #334155"},
+                        className="pastel-card",
                         children=[
-                            html.H3("Per-Patient SHAP Risk Contributors", style={"marginTop": 0, "fontSize": "16px", "color": ACCENT_BLUE}),
+                            html.H3("Per-Patient SHAP Risk Contributors", style={"marginTop": 0, "fontSize": "16px", "color": PASTEL_INDIGO, "fontWeight": "700"}),
                             dcc.Graph(id="shap-waterfall-graph", style={"height": "380px"})
                         ]
                     )
@@ -246,7 +242,6 @@ def render_patient_calculator():
         ]
     )
 
-# Callback to sync dropdown selection with sliders
 @callback(
     [
         Output("slider-recuerdo1", "value"),
@@ -277,7 +272,6 @@ def populate_patient_controls(patient_idx):
     
     return rec1, rec2, vscan, edad, puzz, tech, exer, strok
 
-# Callback to update live value badges next to slider titles
 @callback(
     [
         Output("val-recuerdo1", "children"),
@@ -295,7 +289,6 @@ def populate_patient_controls(patient_idx):
 def update_slider_badges(rec1, rec2, vscan, edad):
     return f"{rec1:.1f} / 8", f"{rec2:.1f} / 8", f"{vscan:.0f} / 60", f"{edad:.0f} yrs"
 
-# Callback to update risk score & SHAP chart based on patient inputs
 @callback(
     [Output("risk-score-card", "children"), Output("shap-waterfall-graph", "figure")],
     [
@@ -328,29 +321,35 @@ def update_patient_view(patient_idx, rec1, rec2, vscan, edad, puzzles, tech, exe
     
     if calib_prob >= 0.50:
         risk_cat = "HIGH DEMENTIA RISK"
-        badge_color = ACCENT_RED
+        badge_bg = "#fee2e2"
+        badge_text = "#991b1b"
+        score_color = PASTEL_ROSE
     elif calib_prob >= 0.20:
         risk_cat = "MODERATE RISK"
-        badge_color = ACCENT_AMBER
+        badge_bg = "#fef3c7"
+        badge_text = "#92400e"
+        score_color = PASTEL_PEACH
     else:
         risk_cat = "LOW RISK"
-        badge_color = ACCENT_GREEN
+        badge_bg = "#d1fae5"
+        badge_text = "#065f46"
+        score_color = PASTEL_MINT
 
     score_card_content = [
         html.Div([
-            html.Div("CALIBRATED RISK PROBABILITY", style={"fontSize": "11px", "color": "#94a3b8", "fontWeight": "600"}),
-            html.Div(f"{calib_prob*100:.1f}%", style={"fontSize": "36px", "fontWeight": "800", "color": badge_color}),
-            html.Div(f"Uncalibrated GBDT raw score: {uncalib_prob*100:.1f}%", style={"fontSize": "11px", "color": "#64748b"})
+            html.Div("CALIBRATED RISK PROBABILITY", style={"fontSize": "11px", "color": TEXT_MUTED, "fontWeight": "700"}),
+            html.Div(f"{calib_prob*100:.1f}%", style={"fontSize": "38px", "fontWeight": "800", "color": score_color}),
+            html.Div(f"Uncalibrated GBDT raw score: {uncalib_prob*100:.1f}%", style={"fontSize": "12px", "color": TEXT_MUTED})
         ]),
         html.Div(
             style={"textAlign": "right"},
             children=[
                 html.Span(risk_cat, style={
-                    "backgroundColor": f"{badge_color}22", "color": badge_color, 
-                    "border": f"1px solid {badge_color}", "padding": "8px 16px", 
-                    "borderRadius": "8px", "fontWeight": "700", "fontSize": "14px"
+                    "backgroundColor": badge_bg, "color": badge_text, 
+                    "padding": "8px 18px", "borderRadius": "12px", 
+                    "fontWeight": "800", "fontSize": "13px", "display": "inline-block"
                 }),
-                html.Div("Confidence Interval: ±1.8%", style={"fontSize": "11px", "color": "#94a3b8", "marginTop": "8px"})
+                html.Div("Confidence Interval: ±1.8%", style={"fontSize": "12px", "color": TEXT_MUTED, "marginTop": "8px", "fontWeight": "500"})
             ]
         )
     ]
@@ -360,7 +359,7 @@ def update_patient_view(patient_idx, rec1, rec2, vscan, edad, puzzles, tech, exe
 
     labels = [item["clinical_label"] for item in reversed(top_explanations)]
     impacts = [item["shap_impact"] for item in reversed(top_explanations)]
-    colors = [ACCENT_RED if val > 0 else ACCENT_BLUE for val in impacts]
+    colors = [PASTEL_ROSE if val > 0 else PASTEL_SKY for val in impacts]
 
     fig = go.Figure(go.Bar(
         x=impacts,
@@ -372,9 +371,9 @@ def update_patient_view(patient_idx, rec1, rec2, vscan, edad, puzzles, tech, exe
         margin=dict(l=10, r=10, t=10, b=30),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        xaxis=dict(title="SHAP Impact on Risk Log-Odds", color="#94a3b8", gridcolor="#334155"),
-        yaxis=dict(color="#f8fafc", tickfont=dict(size=11)),
-        font=dict(color=TEXT_COLOR)
+        xaxis=dict(title="SHAP Impact on Risk Log-Odds", color=TEXT_MUTED, gridcolor="#e2e8f0"),
+        yaxis=dict(color=TEXT_DARK, tickfont=dict(size=11, family="Plus Jakarta Sans, sans-serif")),
+        font=dict(color=TEXT_DARK, family="Plus Jakarta Sans, sans-serif")
     )
 
     return score_card_content, fig
@@ -401,24 +400,24 @@ def render_calibration_inspector():
     ix, iy = get_calibration_xy(iso_p)
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1], mode="lines", name="Perfect Calibration (ECE=0)", line=dict(dash="dash", color="#64748b")))
-    fig.add_trace(go.Scatter(x=ux, y=uy, mode="lines+markers", name="Uncalibrated GBDT (ECE=0.020)", line=dict(color=ACCENT_RED)))
-    fig.add_trace(go.Scatter(x=px_vals, y=py_vals, mode="lines+markers", name="Platt Scaled (ECE=0.018)", line=dict(color=ACCENT_AMBER)))
-    fig.add_trace(go.Scatter(x=ix, y=iy, mode="lines+markers", name="Isotonic Calibrated O3 (ECE=0.0035)", line=dict(color=ACCENT_GREEN, width=3)))
+    fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1], mode="lines", name="Perfect Calibration (ECE=0)", line=dict(dash="dash", color="#94a3b8")))
+    fig.add_trace(go.Scatter(x=ux, y=uy, mode="lines+markers", name="Uncalibrated GBDT (ECE=0.020)", line=dict(color=PASTEL_ROSE)))
+    fig.add_trace(go.Scatter(x=px_vals, y=py_vals, mode="lines+markers", name="Platt Scaled (ECE=0.018)", line=dict(color=PASTEL_PEACH)))
+    fig.add_trace(go.Scatter(x=ix, y=iy, mode="lines+markers", name="Isotonic Calibrated O3 (ECE=0.0035)", line=dict(color=PASTEL_MINT, width=3)))
 
     fig.update_layout(
         title="Reliability Diagram (Predicted Confidence vs Observed Prevalence)",
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        xaxis=dict(title="Mean Predicted Probability", color="#94a3b8", gridcolor="#334155"),
-        yaxis=dict(title="Observed Fraction of Positive Cases", color="#94a3b8", gridcolor="#334155"),
-        font=dict(color=TEXT_COLOR),
+        xaxis=dict(title="Mean Predicted Probability", color=TEXT_MUTED, gridcolor="#e2e8f0"),
+        yaxis=dict(title="Observed Fraction of Positive Cases", color=TEXT_MUTED, gridcolor="#e2e8f0"),
+        font=dict(color=TEXT_DARK, family="Plus Jakarta Sans, sans-serif"),
         margin=dict(l=40, r=20, t=40, b=40)
     )
 
     return html.Div(
-        style={"backgroundColor": CARD_BG, "padding": "24px", "borderRadius": "12px", "border": "1px solid #334155"},
+        className="pastel-card",
         children=[
-            html.H3("O3 Probability Calibration Inspection (Platt vs Isotonic)", style={"marginTop": 0, "color": ACCENT_BLUE}),
+            html.H3("O3 Probability Calibration Inspection (Platt vs Isotonic)", style={"marginTop": 0, "color": PASTEL_INDIGO, "fontWeight": "700"}),
             dcc.Graph(figure=fig, style={"height": "480px"})
         ]
     )
@@ -441,22 +440,22 @@ def render_fairness_auditor():
             aurocs.append(vals["auroc"])
 
     fig = go.Figure()
-    fig.add_trace(go.Bar(x=groups, y=tprs, name="True Positive Rate (Sensitivity)", marker_color=ACCENT_GREEN))
-    fig.add_trace(go.Bar(x=groups, y=fprs, name="False Positive Rate (1-Specificity)", marker_color=ACCENT_AMBER))
-    fig.add_trace(go.Bar(x=groups, y=aurocs, name="Subgroup AUROC", marker_color=ACCENT_BLUE))
+    fig.add_trace(go.Bar(x=groups, y=tprs, name="True Positive Rate (Sensitivity)", marker_color=PASTEL_MINT))
+    fig.add_trace(go.Bar(x=groups, y=fprs, name="False Positive Rate (1-Specificity)", marker_color=PASTEL_PEACH))
+    fig.add_trace(go.Bar(x=groups, y=aurocs, name="Subgroup AUROC", marker_color=PASTEL_INDIGO))
 
     fig.update_layout(
         barmode="group",
         title="Equalized Odds Subgroup Performance Audit (AC-1, KPI-3)",
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        xaxis=dict(color="#94a3b8"), yaxis=dict(title="Metric Score", color="#94a3b8", gridcolor="#334155"),
-        font=dict(color=TEXT_COLOR)
+        xaxis=dict(color=TEXT_MUTED), yaxis=dict(title="Metric Score", color=TEXT_MUTED, gridcolor="#e2e8f0"),
+        font=dict(color=TEXT_DARK, family="Plus Jakarta Sans, sans-serif")
     )
 
     return html.Div(
-        style={"backgroundColor": CARD_BG, "padding": "24px", "borderRadius": "12px", "border": "1px solid #334155"},
+        className="pastel-card",
         children=[
-            html.H3("Subgroup Fairness & Demographic Parity Audit", style={"marginTop": 0, "color": ACCENT_BLUE}),
+            html.H3("Subgroup Fairness & Demographic Parity Audit", style={"marginTop": 0, "color": PASTEL_INDIGO, "fontWeight": "700"}),
             dcc.Graph(figure=fig, style={"height": "450px"})
         ]
     )
@@ -467,26 +466,26 @@ def render_negative_tests():
         cards.append(
             html.Div(
                 style={
-                    "backgroundColor": "#0f172a", "padding": "16px", "borderRadius": "8px", 
-                    "border": "1px solid #334155", "marginBottom": "12px"
+                    "backgroundColor": "#f8fafc", "padding": "16px 20px", "borderRadius": "12px", 
+                    "border": "1px solid #e2e8f0", "marginBottom": "12px"
                 },
                 children=[
                     html.Div(
                         style={"display": "flex", "justifyContent": "space-between", "alignItems": "center"},
                         children=[
-                            html.Span(f"[{k}] {v['name']}", style={"fontWeight": "700", "fontSize": "15px", "color": ACCENT_BLUE}),
-                            html.Span(f"● {v['status']}", style={"color": ACCENT_GREEN, "fontWeight": "700", "fontSize": "13px"})
+                            html.Span(f"[{k}] {v['name']}", style={"fontWeight": "800", "fontSize": "15px", "color": PASTEL_INDIGO}),
+                            html.Span(f"● {v['status']}", style={"backgroundColor": "#d1fae5", "color": "#065f46", "padding": "4px 12px", "borderRadius": "12px", "fontWeight": "800", "fontSize": "12px"})
                         ]
                     ),
-                    html.P(f"Expected Safe Behavior: {v['safe_behavior']}", style={"color": "#cbd5e1", "fontSize": "13px", "margin": "8px 0 0 0"})
+                    html.P(f"Expected Safe Behavior: {v['safe_behavior']}", style={"color": TEXT_MUTED, "fontSize": "13px", "margin": "8px 0 0 0", "fontWeight": "500"})
                 ]
             )
         )
 
     return html.Div(
-        style={"backgroundColor": CARD_BG, "padding": "24px", "borderRadius": "12px", "border": "1px solid #334155"},
+        className="pastel-card",
         children=[
-            html.H3("Mandatory Negative Test Campaign Execution Log (NT-1 to NT-5)", style={"marginTop": 0, "color": ACCENT_BLUE}),
+            html.H3("Mandatory Negative Test Campaign Execution Log (NT-1 to NT-5)", style={"marginTop": 0, "color": PASTEL_INDIGO, "fontWeight": "700"}),
             html.Div(cards)
         ]
     )
