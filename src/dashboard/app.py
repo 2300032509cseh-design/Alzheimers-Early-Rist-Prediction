@@ -34,6 +34,10 @@ explainer = ClinicianSHAPExplainer(mm_model.model, all_feats)
 auditor = SubgroupFairnessAuditor()
 neg_campaign = MandatoryNegativeTestCampaign(mm_model, loader)
 
+# Pre-compute negative test results on startup for instant UI response
+print("Pre-computing Negative Test Campaign logs...")
+cached_neg_results = neg_campaign.run_all_negative_tests(test_df)
+
 assets_dir = os.path.join(os.path.dirname(__file__), "assets")
 app = dash.Dash(
     __name__, 
@@ -42,7 +46,7 @@ app = dash.Dash(
     title="Clinician Risk Dashboard | NIA PREPARE"
 )
 
-# Dark Theme CSS & Inline Styling Tokens
+# Dark Theme Tokens
 DARK_BG = "#0f172a"
 CARD_BG = "#1e293b"
 ACCENT_BLUE = "#38bdf8"
@@ -66,7 +70,7 @@ app.layout = html.Div(
                 "display": "flex",
                 "justifyContent": "space-between",
                 "alignItems": "center",
-                "borderBottom": f"1px solid #334155",
+                "borderBottom": "1px solid #334155",
                 "paddingBottom": "16px",
                 "marginBottom": "24px"
             },
@@ -132,6 +136,15 @@ def render_tab_content(tab_name):
     return html.Div("Select a tab.")
 
 def render_patient_calculator():
+    # Construct clean dropdown options
+    dropdown_options = []
+    for i in range(15):
+        row = test_df.iloc[i]
+        age = int(row['edad']) if pd.notnull(row['edad']) else 65
+        rec2 = float(row['recuerdo2']) if pd.notnull(row['recuerdo2']) else 4.0
+        label_text = f"Patient #{i+1} — Age: {age} yrs | Delayed Recall: {rec2:.1f}/8"
+        dropdown_options.append({"label": label_text, "value": i})
+
     return html.Div(
         style={"display": "grid", "gridTemplateColumns": "1fr 1.6fr", "gap": "24px"},
         children=[
@@ -141,30 +154,57 @@ def render_patient_calculator():
                 children=[
                     html.H3("Patient Clinical Parameters", style={"marginTop": 0, "fontSize": "16px", "color": ACCENT_BLUE}),
                     
-                    html.Label("Patient Case Selector:", style={"fontSize": "13px", "fontWeight": "600", "color": "#f8fafc"}),
-                    dcc.Dropdown(
-                        id="sample-patient-dropdown",
-                        options=[
-                            {"label": f"Patient #{i+1} (Age: {test_df.iloc[i]['edad']}, Rec2: {test_df.iloc[i]['recuerdo2']:.1f})", "value": i}
-                            for i in range(15)
-                        ],
-                        value=0,
-                        style={"marginBottom": "16px"}
+                    html.Label("Patient Case Selector:", style={"fontSize": "13px", "fontWeight": "600", "color": "#f8fafc", "marginBottom": "6px", "display": "block"}),
+                    html.Div(
+                        style={"backgroundColor": "#1e293b", "borderRadius": "8px"},
+                        children=[
+                            dcc.Dropdown(
+                                id="sample-patient-dropdown",
+                                options=dropdown_options,
+                                value=0,
+                                clearable=False,
+                                className="dark-dropdown"
+                            )
+                        ]
                     ),
                     
-                    html.Hr(style={"borderColor": "#334155"}),
+                    html.Hr(style={"borderColor": "#334155", "margin": "16px 0"}),
                     
-                    # Sliders for Cognitive Scores
-                    html.Label("Verbal Learning Score (0-8):", style={"fontSize": "12px", "color": "#cbd5e1"}),
+                    # Sliders with Dynamic Badge Display
+                    html.Div(
+                        style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginTop": "8px"},
+                        children=[
+                            html.Label("Verbal Learning Score (0-8):", style={"fontSize": "12px", "color": "#cbd5e1"}),
+                            html.Span(id="val-recuerdo1", style={"backgroundColor": "#334155", "color": ACCENT_BLUE, "padding": "2px 8px", "borderRadius": "4px", "fontSize": "12px", "fontWeight": "bold"})
+                        ]
+                    ),
                     dcc.Slider(id="slider-recuerdo1", min=0, max=8, step=0.5, value=4.0, marks={0:{'label':'0', 'style':{'color':'#94a3b8'}}, 4:{'label':'4', 'style':{'color':'#94a3b8'}}, 8:{'label':'8', 'style':{'color':'#94a3b8'}}}),
                     
-                    html.Label("Delayed Verbal Recall (0-8):", style={"fontSize": "12px", "color": "#cbd5e1", "marginTop": "8px"}),
+                    html.Div(
+                        style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginTop": "8px"},
+                        children=[
+                            html.Label("Delayed Verbal Recall (0-8):", style={"fontSize": "12px", "color": "#cbd5e1"}),
+                            html.Span(id="val-recuerdo2", style={"backgroundColor": "#334155", "color": ACCENT_BLUE, "padding": "2px 8px", "borderRadius": "4px", "fontSize": "12px", "fontWeight": "bold"})
+                        ]
+                    ),
                     dcc.Slider(id="slider-recuerdo2", min=0, max=8, step=0.5, value=3.0, marks={0:{'label':'0', 'style':{'color':'#94a3b8'}}, 4:{'label':'4', 'style':{'color':'#94a3b8'}}, 8:{'label':'8', 'style':{'color':'#94a3b8'}}}),
 
-                    html.Label("Visual Scanning Speed (0-60):", style={"fontSize": "12px", "color": "#cbd5e1", "marginTop": "8px"}),
+                    html.Div(
+                        style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginTop": "8px"},
+                        children=[
+                            html.Label("Visual Scanning Speed (0-60):", style={"fontSize": "12px", "color": "#cbd5e1"}),
+                            html.Span(id="val-visualscan", style={"backgroundColor": "#334155", "color": ACCENT_BLUE, "padding": "2px 8px", "borderRadius": "4px", "fontSize": "12px", "fontWeight": "bold"})
+                        ]
+                    ),
                     dcc.Slider(id="slider-visualscan", min=0, max=60, step=5, value=25, marks={0:{'label':'0', 'style':{'color':'#94a3b8'}}, 30:{'label':'30', 'style':{'color':'#94a3b8'}}, 60:{'label':'60', 'style':{'color':'#94a3b8'}}}),
 
-                    html.Label("Patient Age (Years):", style={"fontSize": "12px", "color": "#cbd5e1", "marginTop": "8px"}),
+                    html.Div(
+                        style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginTop": "8px"},
+                        children=[
+                            html.Label("Patient Age (Years):", style={"fontSize": "12px", "color": "#cbd5e1"}),
+                            html.Span(id="val-edad", style={"backgroundColor": "#334155", "color": ACCENT_BLUE, "padding": "2px 8px", "borderRadius": "4px", "fontSize": "12px", "fontWeight": "bold"})
+                        ]
+                    ),
                     dcc.Slider(id="slider-edad", min=50, max=95, step=1, value=72, marks={50:{'label':'50', 'style':{'color':'#94a3b8'}}, 70:{'label':'70', 'style':{'color':'#94a3b8'}}, 90:{'label':'90', 'style':{'color':'#94a3b8'}}}),
 
                     # Switches for Behavioral Activities
@@ -206,6 +246,55 @@ def render_patient_calculator():
         ]
     )
 
+# Callback to sync dropdown selection with sliders
+@callback(
+    [
+        Output("slider-recuerdo1", "value"),
+        Output("slider-recuerdo2", "value"),
+        Output("slider-visualscan", "value"),
+        Output("slider-edad", "value"),
+        Output("chk-puzzles", "value"),
+        Output("chk-tech", "value"),
+        Output("chk-exercise", "value"),
+        Output("chk-stroke", "value")
+    ],
+    Input("sample-patient-dropdown", "value")
+)
+def populate_patient_controls(patient_idx):
+    if patient_idx is None:
+        patient_idx = 0
+    row = test_df.iloc[patient_idx]
+    
+    rec1 = float(row["recuerdo1"]) if pd.notnull(row["recuerdo1"]) else 4.0
+    rec2 = float(row["recuerdo2"]) if pd.notnull(row["recuerdo2"]) else 3.0
+    vscan = float(row["visualscan"]) if pd.notnull(row["visualscan"]) else 25.0
+    edad = float(row["edad"]) if pd.notnull(row["edad"]) else 72.0
+    
+    puzz = [1] if float(row.get("cruci_rompe", 0)) == 1 else []
+    tech = [1] if float(row.get("comu_telef_comp", 0)) == 1 else []
+    exer = [1] if float(row.get("ejer_3_por_sem", 0)) == 1 else []
+    strok = [1] if float(row.get("embolia", 0)) == 1 else []
+    
+    return rec1, rec2, vscan, edad, puzz, tech, exer, strok
+
+# Callback to update live value badges next to slider titles
+@callback(
+    [
+        Output("val-recuerdo1", "children"),
+        Output("val-recuerdo2", "children"),
+        Output("val-visualscan", "children"),
+        Output("val-edad", "children")
+    ],
+    [
+        Input("slider-recuerdo1", "value"),
+        Input("slider-recuerdo2", "value"),
+        Input("slider-visualscan", "value"),
+        Input("slider-edad", "value")
+    ]
+)
+def update_slider_badges(rec1, rec2, vscan, edad):
+    return f"{rec1:.1f} / 8", f"{rec2:.1f} / 8", f"{vscan:.0f} / 60", f"{edad:.0f} yrs"
+
 # Callback to update risk score & SHAP chart based on patient inputs
 @callback(
     [Output("risk-score-card", "children"), Output("shap-waterfall-graph", "figure")],
@@ -222,7 +311,8 @@ def render_patient_calculator():
     ]
 )
 def update_patient_view(patient_idx, rec1, rec2, vscan, edad, puzzles, tech, exercise, stroke):
-    # Construct patient feature vector from test set sample
+    if patient_idx is None:
+        patient_idx = 0
     p_df = test_df.iloc[[patient_idx]].copy()
     p_df["recuerdo1"] = rec1
     p_df["recuerdo2"] = rec2
@@ -233,11 +323,9 @@ def update_patient_view(patient_idx, rec1, rec2, vscan, edad, puzzles, tech, exe
     p_df["ejer_3_por_sem"] = 1 if len(exercise) > 0 else 0
     p_df["embolia"] = 1 if len(stroke) > 0 else 0
 
-    # Calibrated prediction
     calib_prob = float(mm_model.predict_proba(p_df, method="isotonic")[0])
     uncalib_prob = float(mm_model.predict_uncalibrated(p_df)[0])
     
-    # Determine risk category
     if calib_prob >= 0.50:
         risk_cat = "HIGH DEMENTIA RISK"
         badge_color = ACCENT_RED
@@ -267,7 +355,6 @@ def update_patient_view(patient_idx, rec1, rec2, vscan, edad, puzzles, tech, exe
         )
     ]
 
-    # SHAP Explanation calculation
     exp = explainer.explain_patient(p_df)
     top_explanations = exp["top_explanations"][:8]
 
@@ -293,14 +380,12 @@ def update_patient_view(patient_idx, rec1, rec2, vscan, edad, puzzles, tech, exe
     return score_card_content, fig
 
 def render_calibration_inspector():
-    # Compute calibration curves for Reliability Diagram
     uncalib_p = mm_model.predict_uncalibrated(test_df)
     platt_p = mm_model.predict_proba(test_df, method="platt")
     iso_p = mm_model.predict_proba(test_df, method="isotonic")
     y_true = test_df["dementia_risk"].values
 
     bins = np.linspace(0, 1, 11)
-    bin_centers = (bins[:-1] + bins[1:]) / 2
 
     def get_calibration_xy(probs):
         x, y = [], []
@@ -377,10 +462,8 @@ def render_fairness_auditor():
     )
 
 def render_negative_tests():
-    results = neg_campaign.run_all_negative_tests(test_df)
-    
     cards = []
-    for k, v in results.items():
+    for k, v in cached_neg_results.items():
         cards.append(
             html.Div(
                 style={
