@@ -34,7 +34,13 @@ explainer = ClinicianSHAPExplainer(mm_model.model, all_feats)
 auditor = SubgroupFairnessAuditor()
 neg_campaign = MandatoryNegativeTestCampaign(mm_model, loader)
 
-app = dash.Dash(__name__, suppress_callback_exceptions=True, title="Clinician Risk Dashboard | NIA PREPARE")
+assets_dir = os.path.join(os.path.dirname(__file__), "assets")
+app = dash.Dash(
+    __name__, 
+    assets_folder=assets_dir,
+    suppress_callback_exceptions=True, 
+    title="Clinician Risk Dashboard | NIA PREPARE"
+)
 
 # Dark Theme CSS & Inline Styling Tokens
 DARK_BG = "#0f172a"
@@ -91,13 +97,17 @@ app.layout = html.Div(
             colors={"border": "#334155", "primary": ACCENT_BLUE, "background": CARD_BG},
             children=[
                 dcc.Tab(label="🩺 Clinician Risk Calculator & SHAP", value="patient-calculator", 
-                        style={"padding": "12px", "color": "#94a3b8"}, selected_style={"padding": "12px", "backgroundColor": "#334155", "color": ACCENT_BLUE, "fontWeight": "bold"}),
+                        style={"padding": "12px", "color": "#94a3b8", "backgroundColor": "#1e293b"}, 
+                        selected_style={"padding": "12px", "backgroundColor": "#334155", "color": ACCENT_BLUE, "fontWeight": "bold"}),
                 dcc.Tab(label="📉 Calibration & Reliability Inspector", value="calibration-tab", 
-                        style={"padding": "12px", "color": "#94a3b8"}, selected_style={"padding": "12px", "backgroundColor": "#334155", "color": ACCENT_BLUE, "fontWeight": "bold"}),
+                        style={"padding": "12px", "color": "#94a3b8", "backgroundColor": "#1e293b"}, 
+                        selected_style={"padding": "12px", "backgroundColor": "#334155", "color": ACCENT_BLUE, "fontWeight": "bold"}),
                 dcc.Tab(label="⚖️ Subgroup Fairness Auditor", value="fairness-tab", 
-                        style={"padding": "12px", "color": "#94a3b8"}, selected_style={"padding": "12px", "backgroundColor": "#334155", "color": ACCENT_BLUE, "fontWeight": "bold"}),
+                        style={"padding": "12px", "color": "#94a3b8", "backgroundColor": "#1e293b"}, 
+                        selected_style={"padding": "12px", "backgroundColor": "#334155", "color": ACCENT_BLUE, "fontWeight": "bold"}),
                 dcc.Tab(label="🛡️ Negative Test Campaign & Degraded Mode", value="negative-tests-tab", 
-                        style={"padding": "12px", "color": "#94a3b8"}, selected_style={"padding": "12px", "backgroundColor": "#334155", "color": ACCENT_BLUE, "fontWeight": "bold"})
+                        style={"padding": "12px", "color": "#94a3b8", "backgroundColor": "#1e293b"}, 
+                        selected_style={"padding": "12px", "backgroundColor": "#334155", "color": ACCENT_BLUE, "fontWeight": "bold"})
             ]
         ),
 
@@ -131,7 +141,7 @@ def render_patient_calculator():
                 children=[
                     html.H3("Patient Clinical Parameters", style={"marginTop": 0, "fontSize": "16px", "color": ACCENT_BLUE}),
                     
-                    html.Label("Patient Case Selector:", style={"fontSize": "13px", "fontWeight": "600"}),
+                    html.Label("Patient Case Selector:", style={"fontSize": "13px", "fontWeight": "600", "color": "#f8fafc"}),
                     dcc.Dropdown(
                         id="sample-patient-dropdown",
                         options=[
@@ -139,32 +149,32 @@ def render_patient_calculator():
                             for i in range(15)
                         ],
                         value=0,
-                        style={"color": "#000", "marginBottom": "16px"}
+                        style={"marginBottom": "16px"}
                     ),
                     
                     html.Hr(style={"borderColor": "#334155"}),
                     
                     # Sliders for Cognitive Scores
                     html.Label("Verbal Learning Score (0-8):", style={"fontSize": "12px", "color": "#cbd5e1"}),
-                    dcc.Slider(id="slider-recuerdo1", min=0, max=8, step=0.5, value=4.0, marks={0:'0', 4:'4', 8:'8'}),
+                    dcc.Slider(id="slider-recuerdo1", min=0, max=8, step=0.5, value=4.0, marks={0:{'label':'0', 'style':{'color':'#94a3b8'}}, 4:{'label':'4', 'style':{'color':'#94a3b8'}}, 8:{'label':'8', 'style':{'color':'#94a3b8'}}}),
                     
                     html.Label("Delayed Verbal Recall (0-8):", style={"fontSize": "12px", "color": "#cbd5e1", "marginTop": "8px"}),
-                    dcc.Slider(id="slider-recuerdo2", min=0, max=8, step=0.5, value=3.0, marks={0:'0', 4:'4', 8:'8'}),
+                    dcc.Slider(id="slider-recuerdo2", min=0, max=8, step=0.5, value=3.0, marks={0:{'label':'0', 'style':{'color':'#94a3b8'}}, 4:{'label':'4', 'style':{'color':'#94a3b8'}}, 8:{'label':'8', 'style':{'color':'#94a3b8'}}}),
 
                     html.Label("Visual Scanning Speed (0-60):", style={"fontSize": "12px", "color": "#cbd5e1", "marginTop": "8px"}),
-                    dcc.Slider(id="slider-visualscan", min=0, max=60, step=5, value=25, marks={0:'0', 30:'30', 60:'60'}),
+                    dcc.Slider(id="slider-visualscan", min=0, max=60, step=5, value=25, marks={0:{'label':'0', 'style':{'color':'#94a3b8'}}, 30:{'label':'30', 'style':{'color':'#94a3b8'}}, 60:{'label':'60', 'style':{'color':'#94a3b8'}}}),
 
                     html.Label("Patient Age (Years):", style={"fontSize": "12px", "color": "#cbd5e1", "marginTop": "8px"}),
-                    dcc.Slider(id="slider-edad", min=50, max=95, step=1, value=72, marks={50:'50', 70:'70', 90:'90'}),
+                    dcc.Slider(id="slider-edad", min=50, max=95, step=1, value=72, marks={50:{'label':'50', 'style':{'color':'#94a3b8'}}, 70:{'label':'70', 'style':{'color':'#94a3b8'}}, 90:{'label':'90', 'style':{'color':'#94a3b8'}}}),
 
                     # Switches for Behavioral Activities
                     html.Div(
                         style={"marginTop": "16px", "display": "grid", "gridTemplateColumns": "1fr 1fr", "gap": "10px"},
                         children=[
-                            dcc.Checklist(id="chk-puzzles", options=[{"label": " Crosswords / Puzzles", "value": 1}], value=[1], style={"fontSize": "12px"}),
-                            dcc.Checklist(id="chk-tech", options=[{"label": " Uses Tech / Mobile", "value": 1}], value=[1], style={"fontSize": "12px"}),
-                            dcc.Checklist(id="chk-exercise", options=[{"label": " Exercise 3x/wk", "value": 1}], value=[0], style={"fontSize": "12px"}),
-                            dcc.Checklist(id="chk-stroke", options=[{"label": " History of Stroke", "value": 1}], value=[0], style={"fontSize": "12px"})
+                            dcc.Checklist(id="chk-puzzles", options=[{"label": " Crosswords / Puzzles", "value": 1}], value=[1], style={"fontSize": "12px", "color": "#f8fafc"}),
+                            dcc.Checklist(id="chk-tech", options=[{"label": " Uses Tech / Mobile", "value": 1}], value=[1], style={"fontSize": "12px", "color": "#f8fafc"}),
+                            dcc.Checklist(id="chk-exercise", options=[{"label": " Exercise 3x/wk", "value": 1}], value=[0], style={"fontSize": "12px", "color": "#f8fafc"}),
+                            dcc.Checklist(id="chk-stroke", options=[{"label": " History of Stroke", "value": 1}], value=[0], style={"fontSize": "12px", "color": "#f8fafc"})
                         ]
                     )
                 ]

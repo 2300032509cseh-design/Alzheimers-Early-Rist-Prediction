@@ -1,0 +1,81 @@
+/* Dark Mode UI Enhancements for Dash & Plotly Components */
+
+body {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    font-family: 'Segoe UI', -apple-system, Roboto, sans-serif !important;
+}
+
+/* Fix Dash Dropdown (React-Select) Dark Mode Contrast */
+.Select-control, .Select, .Select-multi-value-wrapper, .Select-placeholder, .Select-value {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+}
+
+.Select-value-label, .Select-input > input {
+    color: #f8fafc !important;
+}
+
+.Select-menu-outer, .Select-menu {
+    background-color: #1e293b !important;
+    border: 1px solid #334155 !important;
+    color: #f8fafc !important;
+}
+
+.Select-option {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+.Select-option:hover, .Select-option.is-focused {
+    background-color: #334155 !important;
+    color: #38bdf8 !important;
+}
+
+.Select-option.is-selected {
+    background-color: #0f172a !important;
+    color: #10b981 !important;
+}
+
+/* Fix Slider Marks and Tooltips in Dark Mode */
+.rc-slider-mark-text {
+    color: #94a3b8 !important;
+}
+
+.rc-slider-mark-text-active {
+    color: #38bdf8 !important;
+    font-weight: bold;
+}
+
+.rc-slider-rail {
+    background-color: #334155 !important;
+}
+
+.rc-slider-track {
+    background-color: #38bdf8 !important;
+}
+
+.rc-slider-handle {
+    border-color: #38bdf8 !important;
+    background-color: #0f172a !important;
+}
+
+/* Fix Tabs Contrast */
+.tab {
+    background-color: #1e293b !important;
+    color: #94a3b8 !important;
+    border-color: #334155 !important;
+}
+
+.tab--selected {
+    background-color: #334155 !important;
+    color: #38bdf8 !important;
+    font-weight: bold !important;
+    border-bottom: 2px solid #38bdf8 !important;
+}
+
+/* Checkboxes and Labels */
+label {
+    color: #e2e8f0 !important;
+}
