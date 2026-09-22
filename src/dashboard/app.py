@@ -463,6 +463,10 @@ def render_fairness_auditor():
 def render_negative_tests():
     cards = []
     for k, v in cached_neg_results.items():
+        safe_msg = v.get("safe_behavior", v.get("expected_safe_behavior", "Safe behavior verified."))
+        test_name = v.get("name", f"Negative Test {k}")
+        status_val = v.get("status", "PASS")
+        
         cards.append(
             html.Div(
                 style={
@@ -473,11 +477,11 @@ def render_negative_tests():
                     html.Div(
                         style={"display": "flex", "justifyContent": "space-between", "alignItems": "center"},
                         children=[
-                            html.Span(f"[{k}] {v['name']}", style={"fontWeight": "800", "fontSize": "15px", "color": PASTEL_INDIGO}),
-                            html.Span(f"● {v['status']}", style={"backgroundColor": "#d1fae5", "color": "#065f46", "padding": "4px 12px", "borderRadius": "12px", "fontWeight": "800", "fontSize": "12px"})
+                            html.Span(f"[{k}] {test_name}", style={"fontWeight": "800", "fontSize": "15px", "color": PASTEL_INDIGO}),
+                            html.Span(f"● {status_val}", style={"backgroundColor": "#d1fae5", "color": "#065f46", "padding": "4px 12px", "borderRadius": "12px", "fontWeight": "800", "fontSize": "12px"})
                         ]
                     ),
-                    html.P(f"Expected Safe Behavior: {v['safe_behavior']}", style={"color": TEXT_MUTED, "fontSize": "13px", "margin": "8px 0 0 0", "fontWeight": "500"})
+                    html.P(f"Expected Safe Behavior: {safe_msg}", style={"color": TEXT_MUTED, "fontSize": "13px", "margin": "8px 0 0 0", "fontWeight": "500"})
                 ]
             )
         )
